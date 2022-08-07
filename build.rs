@@ -8,8 +8,7 @@ fn main() {
         .bytes()
         .expect("Failed to get response as bytes");
 
-    // std::fs::write("test.test", "test").expect("Failed to write 7zip binary");
-    // std::fs::write("7zr.exe", binary).expect("Failed to write 7zip binary");
+    std::fs::write("7zr.exe", binary).expect("Failed to write 7zip binary");
 
     // Set environment variable
     println!(
