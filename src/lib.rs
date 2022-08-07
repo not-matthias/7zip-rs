@@ -18,9 +18,7 @@ impl SevenZip {
 
     /// Extracts the files and returns them.
     pub fn extract(&self) -> Option<HashMap<String, Vec<u8>>> {
-        let executable = std::env::var("7Z_PATH").expect("Couldn't find 7z binary");
-        log::trace!("7z binary is at {}", &executable);
-
+        let executable = std::env::temp_dir().join("7zr.exe");
         let output = Command::new(executable)
             .arg("x")
             .arg(self.file_path.as_path())
