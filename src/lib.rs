@@ -7,10 +7,15 @@ pub struct SevenZip {
 }
 
 impl SevenZip {
-    pub fn new(file: &[u8]) -> SevenZip {
+    pub fn new_file(file_path: PathBuf) -> Option<SevenZip> {
+        let content = std::fs::read(&file_path).ok()?;
+        Some(Self::new(file_path.file_name()?.to_str()?, &content))
+    }
+
+    pub fn new(name: &str, file: &[u8]) -> SevenZip {
         let dir = tempdir().expect("Failed to create temporary directory");
 
-        let file_path = dir.path().join("file.7z");
+        let file_path = dir.path().join(name);
         std::fs::write(&file_path, file).expect("Failed to write 7zip archive");
 
         SevenZip { dir, file_path }
