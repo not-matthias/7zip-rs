@@ -9,13 +9,11 @@ fn main() {
         .bytes()
         .expect("Failed to get response as bytes");
 
-    std::fs::write("7zr.exe", binary).expect("Failed to write 7zip binary");
+    let path = std::env::temp_dir().join("7zr.exe");
+    std::fs::write(&path, binary).expect("Failed to write 7zip binary");
 
     // Set environment variable
-    println!(
-        "cargo:rustc-env=7Z_PATH={}",
-        std::env::temp_dir().join("7zr.exe").to_str().unwrap()
-    );
+    println!("cargo:rustc-env=7Z_PATH={}", path.to_str().unwrap());
 
     // TODO: Linux https://www.7-zip.org/download.html
 }
