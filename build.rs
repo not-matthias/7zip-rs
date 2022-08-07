@@ -1,6 +1,7 @@
 fn main() {
     println!("cargo:rerun-if-changed=src/lib.rs");
     println!("cargo:rerun-if-changed=build.rs");
+    println!("cargo:rerun-if-changed=7zr.exe");
 
     // #[cfg(target_os = "windows")]
     let binary = reqwest::blocking::get("https://www.7-zip.org/a/7zr.exe")
