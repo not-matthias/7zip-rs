@@ -14,11 +14,7 @@ fn main() {
     // Set environment variable
     println!(
         "cargo:rustc-env=7Z_PATH={}",
-        std::env::current_dir()
-            .unwrap()
-            .join("7zr.exe")
-            .to_str()
-            .unwrap()
+        std::env::temp_dir().join("7zr.exe").to_str().unwrap()
     );
 
     // TODO: Linux https://www.7-zip.org/download.html
