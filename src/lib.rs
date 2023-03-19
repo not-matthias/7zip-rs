@@ -1,5 +1,6 @@
 use std::{collections::HashMap, path::PathBuf, process::Command};
 use tempfile::{tempdir, TempDir};
+use walkdir::WalkDir;
 
 pub struct SevenZip {
     pub dir: TempDir,
@@ -28,6 +29,12 @@ impl SevenZip {
         } else {
             "7z".into()
         };
+
+        log::debug!(
+            "Extracting {} to {}",
+            self.file_path.display(),
+            self.dir.path().display()
+        );
         let output = Command::new(executable)
             .arg("x")
             .arg(self.file_path.as_path())
@@ -39,19 +46,27 @@ impl SevenZip {
                 log::error!("Failed to run command: {:?}", error);
                 return None;
             }
-            Ok(output) => output,
+            Ok(output) => {
+                log::debug!("Successfully ran the command. {}", output.status);
+                output
+            }
         };
 
         if output.status.success() {
             let mut files = HashMap::new();
 
-            for entry in self.dir.path().read_dir().ok()? {
-                let path = entry.ok()?.path();
+            for entry in WalkDir::new(self.dir.path())
+                .into_iter()
+                .filter_map(|e| e.ok())
+            {
+                log::debug!("Found entry: {}", entry.path().display());
 
-                files.insert(
-                    path.file_name()?.to_str()?.to_string(),
-                    std::fs::read(path).ok()?,
-                );
+                let name = entry.file_name().to_string_lossy();
+                let Ok(content) = std::fs::read(entry.path()) else {
+                    continue;
+                };
+
+                files.insert(name.to_string(), content);
             }
 
             Some(files)
